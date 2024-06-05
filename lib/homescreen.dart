@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:portfolio/statitem.dart';
 
 class PortfolioScreen extends StatefulWidget {
   @override
@@ -15,11 +20,31 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   final GlobalKey _experienceKey = GlobalKey();
   final GlobalKey _communityKey = GlobalKey();
 
+  final List<String> titles = [
+    'Flutter Developer',
+    'UI Designer',
+    'A Friend',
+    'Mentor',
+    'Student'
+  ];
+
+  int _currentTitleIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Timer.periodic(Duration(seconds: 2), (Timer timer) {
+      setState(() {
+        _currentTitleIndex = (_currentTitleIndex + 1) % titles.length;
+      });
+    });
+  }
+
   void _scrollToSection(GlobalKey key) {
     final context = key.currentContext;
     if (context != null) {
       Scrollable.ensureVisible(context,
-          duration: Duration(seconds: 1), curve: Curves.easeInOut);
+          duration: Duration(seconds: 2), curve: Curves.easeInOut);
     }
   }
 
@@ -46,7 +71,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             _buildExperienceSection(),
             SizedBox(height: 300),
             _buildCommunitySection(),
-            SizedBox(height: 300  ),
+            SizedBox(height: 300),
           ],
         ),
       ),
@@ -54,24 +79,41 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   Widget _buildHeader() {
+    final size = MediaQuery.of(context).size;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '<Hamza/>',
+            '< Neel Patel/>',
             style: TextStyle(
-                fontSize: 24, color: Colors.white54, fontWeight: FontWeight.bold),
+                fontSize: 24,
+                color: Colors.white54,
+                fontWeight: FontWeight.bold),
           ),
           Row(
             children: [
               _buildNavItem('About', _aboutKey),
+              SizedBox(
+                width: size.width / 24,
+              ),
               _buildNavItem('Tech', _techKey),
+              SizedBox(
+                width: size.width / 24,
+              ),
               _buildNavItem('Projects', _projectsKey),
+              SizedBox(
+                width: size.width / 24,
+              ),
               _buildNavItem('Experience', _experienceKey),
+              SizedBox(
+                width: size.width / 24,
+              ),
               _buildNavItem('Community', _communityKey),
-              SizedBox(width: 20),
+              SizedBox(
+                width: size.width / 24,
+              ),
               Icon(Icons.gite, size: 30, color: Colors.white54),
             ],
           ),
@@ -85,102 +127,243 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   Widget _buildProfileSection() {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 80,
-          backgroundImage: NetworkImage(
-              'https://example.com/path-to-image.jpg'), // Replace with your image URL
-        ),
-        SizedBox(height: 20),
-        Text(
-          'Full Stack Flutter Expert',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.greenAccent,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Row(
+        children: [
+          Spacer(),
+          SizedBox(width: 150),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 40),
+              Text(
+                'Neel Patel',
+                style: TextStyle(
+                    fontSize: 52,letterSpacing: 4,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(Icons.play_arrow, color: Color(0xff00CDAC)),
+                  SizedBox(
+                    width: 250.0,
+                    child: AnimatedTextKit(
+                      animatedTexts: titles
+                          .map((title) => TypewriterAnimatedText(
+                        title,
+                        textStyle: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xff00CDAC),
+                        ),
+                        speed: Duration(milliseconds: 100),
+                      ))
+                          .toList(),
+                      repeatForever: true,
+                      pause: Duration(milliseconds: 1000),
+                      displayFullTextOnTap: true,
+                      stopPauseOnTap: true,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _buildSocialIcon(
+                    FontAwesomeIcons.linkedin,
+                    'https://www.linkedin.com/in/neelwork',
+                  ),
+                  _buildSocialIcon(
+                    FontAwesomeIcons.github,
+                    'https://github.com/patelneel9080',
+                  ),
+                  _buildSocialIcon(
+                    FontAwesomeIcons.xTwitter,
+                    'https://x.com/patelneel9080',
+                  ),
+                  _buildSocialIcon(
+                    FontAwesomeIcons.youtube,
+                    'https://www.youtube.com/channel/UCNNesGhDEIZyfp5KNWLUtvw',
+                  ),
+                  _buildSocialIcon(
+                    FontAwesomeIcons.instagram,
+                    'https://www.instagram.com/code_with_neel',
+                  ),
+                ],
+              ),
+              SizedBox(height: 80),
+              _buildStats(),
+            ],
           ),
-        ),
-        SizedBox(height: 20),
-        Text(
-          'Muhammad',
-          style: TextStyle(
-              fontSize: 48, fontWeight: FontWeight.w300, color: Colors.white54),
-        ),
-        Text(
-          'Hamza',
-          style: TextStyle(
-              fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white54),
-        ),
-        SizedBox(height: 10),
-        Icon(Icons.play_arrow, color: Colors.greenAccent),
-        SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildSocialIcon(Icons.link),
-            _buildSocialIcon(Icons.gite),
-            _buildSocialIcon(Icons.article),
-            _buildSocialIcon(Icons.facebook),
-            _buildSocialIcon(Icons.install_desktop),
-            _buildSocialIcon(Icons.transfer_within_a_station),
-          ],
-        ),
-        SizedBox(height: 50),
-        _buildStats(),
-      ],
+          SizedBox(width: 100),
+          Align(
+            alignment: Alignment.centerRight,
+            child: SizedBox(
+              height:
+              600,
+              width: 600  ,
+              child: Image.asset(
+                'assets/Images/1 (1).png', // Replace with your image URL
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Spacer()
+        ],
+      ),
     );
   }
 
-  Widget _buildSocialIcon(IconData icon) {
-    return SocialIcon(icon: icon);
+  Widget _buildSocialIcon(IconData icon, String url) {
+    return SocialIcon(
+      icon: icon,
+      url: url,
+    );
   }
 
   Widget _buildStats() {
+    final size = MediaQuery.of(context).size;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "LET'S CHAT!",
           style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.greenAccent),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xff00CDAC)),
         ),
         SizedBox(height: 10),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildStatItem('4', 'Years Experience'),
-            _buildStatItem('35+', 'Projects Completed\nin 10+ Countries'),
-            _buildStatItem('110k', 'Content Reach & Views'),
+            StatItem(initialValue: '4', label: 'Years Experience'),
+            SizedBox(width: size.width/44,),
+            StatItem(initialValue: '20', label: 'Projects Completed'),
+            SizedBox(width: size.width/44,),
+            StatItem(initialValue: '12262', label: 'Content Impression & Views'),
           ],
-        ),
-      ],
-    );
-  }
+        )
 
-  Widget _buildStatItem(String value, String description) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white54),
-        ),
-        SizedBox(height: 5),
-        Text(
-          description,
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, color: Colors.white54),
-        ),
       ],
     );
   }
 
   Widget _buildAboutSection() {
-    return _buildSection(
+    return Padding(
+      padding: EdgeInsets.all(8),
       key: _aboutKey,
-      title: 'About Me',
-      content: 'This is the about section. Here you can describe yourself and your background.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 150,),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "About me",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff00CDAC)),
+                    ),
+                    Text(
+                      "Hello there! My name is Neel",
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff00CDAC),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "\"If you are not going to tell the world who you are, the world is not going to tell you, how good you are.\"",
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.white54,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'A Self-taught developer who has developed solutions, MVPs, products, and systems for more than 4 years. I have worked in various niches such as Safety apps, Travel apps like Airlines, Buses, and Hotels booking. In addition to E-Commerce, lifestyle, and storytelling apps. I enjoy learning new tech so I\'m always exploring new stuff. That\'s the reason I\'ve worked with almost every field out there starting with 3D model designing, game, web, and mobile development, along with Machine learning and so on. I\'ve open-sourced numerous projects on my GitHub and I\'ve been writing articles on medium for the last 3 years now. In addition, I\'ve been Google DSC lead and Microsoft Student Ambassador. Currently, I\'m leading the official community Flutter Islamabad, Pakistan. Apart from tech, I love doing UI/UX design, playing video games, and editing videos.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white54,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _launchURL('https://drive.google.com/file/d/1NdsIKxAaF5RngtRYDjnmD4n4xBd6kjj8/view?usp=drive_link'); // Replace the URL with the actual URL of your resume PDF
+                      },
+                      icon: Icon(Icons.download),
+                      label: Text('Download Resume'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        backgroundColor: Color(0xff00CDAC),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+              SizedBox(width: 20),
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      _buildImage('assets/Images/img1.jpg'), // Replace with your image paths
+                      SizedBox(width: 10),
+                      _buildImage('assets/Images/img2.jpg'), // Replace with your image paths
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      _buildImage('assets/Images/img3.jpg'), // Replace with your image paths
+                      SizedBox(width: 10),
+                      _buildImage('assets/Images/img4.jpg'), // Replace with your image paths
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+  }
+  void _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+
+  Widget _buildImage(String path) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.asset(
+        path,
+        width: 150,
+        height: 150,
+        fit: BoxFit.cover,
+      ),
     );
   }
+
 
   Widget _buildTechSection() {
     return _buildSection(
@@ -214,7 +397,10 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 
-  Widget _buildSection({required GlobalKey key, required String title, required String content}) {
+  Widget _buildSection(
+      {required GlobalKey key,
+        required String title,
+        required String content}) {
     return Padding(
       key: key,
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -223,7 +409,10 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.greenAccent),
+            style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff00CDAC)),
           ),
           SizedBox(height: 20),
           Text(
@@ -262,7 +451,7 @@ class _NavItemState extends State<NavItem> {
             widget.title,
             style: TextStyle(
               fontSize: 16,
-              color: _isHovered ? Colors.greenAccent : Colors.white54,
+              color: _isHovered ? Color(0xff00CDAC) : Colors.white54,
             ),
           ),
         ),
@@ -273,8 +462,9 @@ class _NavItemState extends State<NavItem> {
 
 class SocialIcon extends StatefulWidget {
   final IconData icon;
+  final String url;
 
-  SocialIcon({required this.icon});
+  SocialIcon({required this.icon, required this.url});
 
   @override
   _SocialIconState createState() => _SocialIconState();
@@ -283,17 +473,46 @@ class SocialIcon extends StatefulWidget {
 class _SocialIconState extends State<SocialIcon> {
   bool _isHovered = false;
 
+  Future<void> _launchURL() async {
+    if (await canLaunch(widget.url)) {
+      await launch(widget.url);
+    } else {
+      throw 'Could not launch ${widget.url}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: Icon(
-          widget.icon,
-          size: 30,
-          color: _isHovered ? Colors.greenAccent : Colors.white54,
+      child: GestureDetector(
+        onTap: _launchURL,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 100),
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            shape: BoxShape.circle,
+            boxShadow: _isHovered
+                ? [
+              BoxShadow(
+                  color: Color(0xff93F9B97),
+                  blurRadius: 8,
+                  spreadRadius: .5)
+            ]
+                : [],
+          ),
+          child: CircleAvatar(
+            radius: 20,
+            backgroundColor: Color(0xff25262A),
+            // Keeping a constant background color
+            child: Icon(
+              widget.icon,
+              size: 20,
+              color: _isHovered ? Colors.white : Color(0xff00CDAC),
+            ),
+          ),
         ),
       ),
     );
