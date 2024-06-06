@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/expertise_section.dart';
 import 'package:portfolio/project_card.dart';
 import 'package:portfolio/project_model.dart';
 import 'package:portfolio/social_icon.dart';
@@ -28,8 +29,9 @@ class PortfolioScreen extends StatefulWidget {
 }
 
 class _PortfolioScreenState extends State<PortfolioScreen> {
+  bool isfloatHover = false;
   final ScrollController _scrollController = ScrollController();
-
+  bool _showScrollToTopButton = false;
   final GlobalKey _aboutKey = GlobalKey();
   final GlobalKey _techKey = GlobalKey();
   final GlobalKey _projectsKey = GlobalKey();
@@ -56,11 +58,24 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(() {
+      setState(() {
+        _showScrollToTopButton = _scrollController.offset > 300;
+      });
+    });
     Timer.periodic(Duration(seconds: 2), (Timer timer) {
       setState(() {
         _currentTitleIndex = (_currentTitleIndex + 1) % titles.length;
       });
     });
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: Duration(seconds: 1),
+      curve: Curves.easeOut,
+    );
   }
 
   void _scrollToSection(GlobalKey key) {
@@ -90,14 +105,32 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             _buildTechSection(),
             SizedBox(height: 150),
             _buildProjectsSection(),
+            SizedBox(height: 60),
+            _buildExpertiseSection(),
             SizedBox(height: 150),
             _buildContactSection(),
             SizedBox(height: 150),
-            _buildExpertiseSection(),
-            SizedBox(height: 300),
+
           ],
         ),
       ),
+      floatingActionButton: _showScrollToTopButton
+          ?  MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: FloatingActionButton(
+          onPressed: () {
+            _scrollController.animateTo(
+              0.0,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            );
+          },
+          child: Icon(Icons.arrow_upward,color: Colors.black,),
+          backgroundColor: isfloatHover ? Colors.white : themecolor, // Change color based on hover state
+        ),
+      )
+          : null,
     );
   }
 
@@ -324,16 +357,17 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            StatItem(initialValue: '4', label: 'Years Experience'),
-            SizedBox(
-              width: size.width / 44,
-            ),
+
             StatItem(initialValue: '20', label: 'Projects Completed'),
             SizedBox(
               width: size.width / 44,
             ),
+            StatItem(initialValue: '600', label: 'Content Followers'),
+            SizedBox(
+              width: size.width / 44,
+            ),
             StatItem(
-                initialValue: '12262', label: 'Content Impression & Views'),
+                initialValue: '12547', label: 'Content Impression & Views'),
           ],
         )
       ],
@@ -363,7 +397,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       Text(
                         "About me",
                         style: TextStyle(
-                            fontSize: 32,
+                            fontSize: 32,decoration: TextDecoration.underline,
+                            decorationColor: themecolor,
                             fontWeight: FontWeight.bold,
                             color: themecolor),
                       ),
@@ -478,7 +513,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                   children: [
                     Text(
                       "TechStack",
-                      style: TextStyle(
+                      style: TextStyle(decoration: TextDecoration.underline,
+                          decorationColor: themecolor,
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: themecolor),
@@ -589,11 +625,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
 
 
   Widget _buildProjectsSection() {
-    // return _buildSection(
-    //   key: _projectsKey,
-    //   title: 'Projects',
-    //   content: 'Showcase your projects here.',
-    // );
     return Container(
       color: Color(0xff25262A),
       key: _projectsKey,
@@ -604,32 +635,45 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           Text(
             "Projects",
             style: TextStyle(
+              decoration: TextDecoration.underline,
+                decorationColor: themecolor,
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: themecolor),
           ),
           SizedBox(height: 20,),
-      Container(
-        height: 700,
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 40,
-            mainAxisSpacing: 40,
-              childAspectRatio: 2.2/2,
+          Container(
+            height: 700,
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 40,
+                mainAxisSpacing: 40,
+                childAspectRatio: 2.2 / 2,
+              ),
+              itemCount: projects.length,
+              itemBuilder: (context, index) {
+                final project = projects[index];
+                if (index >= projects.length - 2) {
+                  return Center(
+                    child: ProjectCard(project: project),
+                  );
+                }
+                return ProjectCard(project: project);
+              },
+            ),
           ),
-          itemCount: projects.length,
-
-          itemBuilder: (context, index) {
-            final project = projects[index];
-            return ProjectCard(project: project);
-          },
-        ),
-      ),
         ],
       ),
     );
   }
+  Widget _buildExpertiseSection() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 350,vertical: 400),
+      child: ExpertiseSection(key: _expertiseKey),
+    );
+  }
+
 
   Widget _buildContactSection() {
     return _buildSection(
@@ -639,13 +683,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 
-  Widget _buildExpertiseSection() {
-    return _buildSection(
-      key: _expertiseKey,
-      title: 'Community Involvement',
-      content: 'Talk about your community involvement here.',
-    );
-  }
+
 
   Widget _buildSection(
       {required GlobalKey key,

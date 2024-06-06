@@ -50,7 +50,7 @@ class _StatItemState extends State<StatItem>
         return Column(
           children: [
             Text(
-              '${_animation.value.toInt()}',
+              '${_animation.value.toInt()}+',
               style: TextStyle(
                   fontSize: 24, fontWeight: FontWeight.bold, color: themecolor),
             ),
