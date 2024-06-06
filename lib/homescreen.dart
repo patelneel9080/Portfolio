@@ -4,10 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/project_card.dart';
+import 'package:portfolio/project_model.dart';
+import 'package:portfolio/social_icon.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:portfolio/statitem.dart';
 
 import 'const.dart';
+import 'geticons.dart';
+import 'nav_item.dart';
 
 Color themeColor = Color(0xffBEFFF7); // Default theme color
 final List<Color> themeColors = [
@@ -28,8 +33,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   final GlobalKey _aboutKey = GlobalKey();
   final GlobalKey _techKey = GlobalKey();
   final GlobalKey _projectsKey = GlobalKey();
-  final GlobalKey _experienceKey = GlobalKey();
-  final GlobalKey _communityKey = GlobalKey();
+  final GlobalKey _expertiseKey = GlobalKey();
+  final GlobalKey _contactKey = GlobalKey();
+  final Map<String, bool> _hoverStates = {};
 
   final List<String> titles = [
     'Flutter Developer',
@@ -85,9 +91,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             SizedBox(height: 150),
             _buildProjectsSection(),
             SizedBox(height: 150),
-            _buildExperienceSection(),
+            _buildContactSection(),
             SizedBox(height: 150),
-            _buildCommunitySection(),
+            _buildExpertiseSection(),
             SizedBox(height: 300),
           ],
         ),
@@ -126,11 +132,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               SizedBox(
                 width: size.width / 24,
               ),
-              _buildNavItem('Experience', _experienceKey),
+              _buildNavItem('Expertise', _expertiseKey),
               SizedBox(
                 width: size.width / 24,
               ),
-              _buildNavItem('Community', _communityKey),
+              _buildNavItem('Contact', _contactKey),
               SizedBox(
                 width: size.width / 24,
               ),
@@ -189,24 +195,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           ),
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildColorToggle(String label, Color color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label),
-        Switch(
-          value: themeColor == color,
-          onChanged: (bool selected) {
-            if (selected) {
-              _changeThemeColor(color);
-            }
-          },
-          activeColor: color,
-        ),
-      ],
     );
   }
 
@@ -414,31 +402,30 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                         onExit: (_) => setState(() => _isHovered = false),
                         child: Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: _isHovered
-                                        ? themecolor
-                                        : Colors.transparent,
-                                    blurRadius: 12,
-                                    spreadRadius: -5)
-                              ]),
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: _isHovered ? themecolor : Colors.transparent,
+                                blurRadius: 12,
+                                spreadRadius: -3,
+                              ),
+                            ],
+                          ),
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              _launchURL(
-                                  'https://drive.google.com/file/d/1NdsIKxAaF5RngtRYDjnmD4n4xBd6kjj8/view?usp=drive_link');
+                              _launchURL('https://drive.google.com/file/d/1NdsIKxAaF5RngtRYDjnmD4n4xBd6kjj8/view?usp=drive_link');
                             },
-                            icon: Icon(Icons.download, color: Colors.black),
-                            label: Text('Download Resume',
-                                style: TextStyle(color: Colors.black)),
+                            icon: Icon(Icons.download, color: Colors.black), // Change color based on hover state
+                            label: Text('Download Resume', style: TextStyle(color: Colors.black)), // Change color based on hover state
                             style: ElevatedButton.styleFrom(
                               fixedSize: Size(200, 50),
-                              foregroundColor: Colors.black,
-                              backgroundColor: themecolor,
+                              foregroundColor: _isHovered ? Colors.white : Colors.black, // Change text color based on hover state
+                              backgroundColor: _isHovered  ? Colors.white : themecolor, // Change button color based on hover state
                             ),
                           ),
                         ),
                       )
+
                     ],
                   ),
                 ),
@@ -472,17 +459,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     }
   }
 
-  Widget _buildImage(String path) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.asset(
-        path,
-        width: 150,
-        height: 150,
-        fit: BoxFit.cover,
-      ),
-    );
-  }
 
   Widget _buildTechSection() {
     return Padding(
@@ -547,8 +523,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   Widget _buildTechCategory(String title, List<String> technologies) {
-    Color _techHover = Color(0xff25262A);
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -557,54 +531,52 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           Text(
             title,
             style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.white54),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.white54,
+            ),
           ),
           SizedBox(height: 5),
           Wrap(
             spacing: 10,
             runSpacing: 10,
             children: technologies.map((tech) {
+              bool isHovered = _hoverStates[tech] ?? false;
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
                 onEnter: (_) {
                   setState(() {
-                    _techHover = themecolor;
+                    _hoverStates[tech] = true;
                   });
                 },
                 onExit: (_) {
                   setState(() {
-                    _techHover = themecolor;
+                    _hoverStates[tech] = false;
                   });
                 },
-                child: MouseRegion(
-                  onEnter: (_) => setState(() => _isHovered = true),
-                  onExit: (_) => setState(() => _isHovered = false),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: themecolor,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _isHovered ? themecolor : Colors.transparent,
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _getTechIcon(tech),
-                        SizedBox(width: 8),
-                        Text(
-                          tech,
-                          style: TextStyle(color: Color(0xff25262A)),
-                        ),
-                      ],
-                    ),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isHovered ? Colors.white : themecolor,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isHovered ? themecolor : Colors.transparent,
+                        blurRadius: 8,
+                        spreadRadius: -2,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      getTechIcon(tech,color: Colors.black),
+                      SizedBox(width: 8),
+                      Text(
+                        tech,
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -615,41 +587,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 
-  Icon _getTechIcon(String tech) {
-    switch (tech) {
-      case 'Flutter':
-        return Icon(Icons.flutter_dash, color: Color(0xff25262A));
-      case 'Dart':
-        return Icon(Icons.code, color: Color(0xff25262A));
-      case 'HTML 5':
-        return Icon(Icons.language, color: Color(0xff25262A));
-      case 'CSS 3':
-        return Icon(Icons.style, color: Color(0xff25262A));
-      case 'Javascript':
-        return Icon(Icons.javascript, color: Color(0xff25262A));
-      case 'Node.js':
-        return Icon(Icons.nature, color: Color(0xff25262A));
-      case 'REST APIs':
-        return Icon(Icons.api, color: Color(0xff25262A));
-      case 'Firebase':
-        return Icon(Icons.cloud, color: Color(0xff25262A));
-      case 'My SQL':
-        return Icon(Icons.storage, color: Color(0xff25262A));
-      case 'GitHub':
-        return Icon(Icons.code, color: Color(0xff25262A));
-      case 'GitLab':
-        return Icon(
-          Icons.code,
-          color: Color(0xff25262A),
-        );
-      case 'Figma':
-        return Icon(Icons.design_services, color: Color(0xff25262A));
-      case 'Adobe XD':
-        return Icon(Icons.design_services, color: Color(0xff25262A));
-      default:
-        return Icon(Icons.device_unknown);
-    }
-  }
 
   Widget _buildProjectsSection() {
     // return _buildSection(
@@ -657,31 +594,54 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     //   title: 'Projects',
     //   content: 'Showcase your projects here.',
     // );
-    return Column(
+    return Container(
+      color: Color(0xff25262A),
       key: _projectsKey,
-      children: [
-        Text(
-          "Projects",
-          style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: themecolor),
+      padding: const EdgeInsets.symmetric(horizontal: 250),
+      child: Column(
+        children: [
+          SizedBox(height: 30,),
+          Text(
+            "Projects",
+            style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: themecolor),
+          ),
+          SizedBox(height: 20,),
+      Container(
+        height: 700,
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 40,
+            mainAxisSpacing: 40,
+              childAspectRatio: 2.2/2,
+          ),
+          itemCount: projects.length,
+
+          itemBuilder: (context, index) {
+            final project = projects[index];
+            return ProjectCard(project: project);
+          },
         ),
-      ],
+      ),
+        ],
+      ),
     );
   }
 
-  Widget _buildExperienceSection() {
+  Widget _buildContactSection() {
     return _buildSection(
-      key: _experienceKey,
+      key: _contactKey,
       title: 'Experience',
       content: 'Detail your work experience in this section.',
     );
   }
 
-  Widget _buildCommunitySection() {
+  Widget _buildExpertiseSection() {
     return _buildSection(
-      key: _communityKey,
+      key: _expertiseKey,
       title: 'Community Involvement',
       content: 'Talk about your community involvement here.',
     );
@@ -713,161 +673,3 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   }
 }
 
-class NavItem extends StatefulWidget {
-  final String title;
-  final VoidCallback onTap;
-
-  NavItem({required this.title, required this.onTap});
-
-  @override
-  _NavItemState createState() => _NavItemState();
-}
-
-class _NavItemState extends State<NavItem> {
-  bool _isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Text(
-            widget.title,
-            style: TextStyle(
-              fontSize: 16,
-              color: _isHovered ? themecolor : Colors.white54,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class SocialIcon extends StatefulWidget {
-  final IconData icon;
-  final String url;
-
-  SocialIcon({required this.icon, required this.url});
-
-  @override
-  _SocialIconState createState() => _SocialIconState();
-}
-
-class _SocialIconState extends State<SocialIcon> {
-  bool _isHovered = false;
-
-  Future<void> _launchURL() async {
-    if (await canLaunch(widget.url)) {
-      await launch(widget.url);
-    } else {
-      throw 'Could not launch ${widget.url}';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: TweenAnimationBuilder(
-        tween: Tween<double>(begin: 1.0, end: _isHovered ? 1 : 1.0),
-        duration: const Duration(milliseconds: 200),
-        builder: (context, scale, child) {
-          return Transform.scale(
-            scale: scale,
-            child: GestureDetector(
-              onTap: _launchURL,
-              child: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                          color: _isHovered ? themecolor : Colors.transparent,
-                          blurRadius: 5,
-                          spreadRadius: -5)
-                    ]),
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Color(0xff25262A),
-                  child: Icon(
-                    widget.icon,
-                    size: 20,
-                    color: _isHovered ? Colors.white : themecolor,
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class StatItem extends StatefulWidget {
-  final String initialValue;
-  final String label;
-
-  const StatItem({
-    Key? key,
-    required this.initialValue,
-    required this.label,
-  }) : super(key: key);
-
-  @override
-  _StatItemState createState() => _StatItemState();
-}
-
-class _StatItemState extends State<StatItem>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    );
-    _animation = Tween<double>(
-      begin: 0,
-      end: double.parse(widget.initialValue),
-    ).animate(_animationController);
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Column(
-          children: [
-            Text(
-              '${_animation.value.toInt()}',
-              style: TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: themecolor),
-            ),
-            Text(widget.label,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.white54)),
-          ],
-        );
-      },
-    );
-  }
-}
