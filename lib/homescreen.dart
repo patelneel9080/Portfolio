@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/contact.dart';
 import 'package:portfolio/expertise_section.dart';
 import 'package:portfolio/project_card.dart';
 import 'package:portfolio/project_model.dart';
@@ -15,12 +16,7 @@ import 'const.dart';
 import 'geticons.dart';
 import 'nav_item.dart';
 
-Color themeColor = Color(0xffBEFFF7); // Default theme color
-final List<Color> themeColors = [
-  Color(0xffBEFFF7),
-  Color(0xffFF6F61),
-  Color(0xff6B5B95)
-];
+
 bool _isHovered = false;
 
 class PortfolioScreen extends StatefulWidget {
@@ -106,12 +102,21 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             _buildTechSection(),
             SizedBox(height: 150),
             _buildProjectsSection(),
-            SizedBox(height: 60),
+            SizedBox(height: 50),
             _buildExpertiseSection(),
-            SizedBox(height: 150),
+            SizedBox(height: 70),
             _buildContactSection(),
-            SizedBox(height: 150),
-
+            SizedBox(height: 30),
+            RichText(
+              text: TextSpan(
+                text: 'Designed & Created by ',
+                style: TextStyle(fontWeight: FontWeight.w600,color: Colors.white),
+                children:  <TextSpan>[
+                  TextSpan(text: 'Neel Patel', style: TextStyle(fontWeight: FontWeight.w600,color: themecolor)),
+                ],
+              ),
+            ),
+            SizedBox(height: 30),
           ],
         ),
       ),
@@ -343,14 +348,19 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Let's Chat!",
-          style: TextStyle(
-            decoration: TextDecoration.underline,
-            decorationColor: themecolor,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: themecolor,
+        GestureDetector(
+          onTap: () {
+            _scrollToContact(); // Scroll to the Contact section when tapped
+          },
+          child: Text(
+            "Let's Chat!",
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              decorationColor: themecolor,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: themecolor,
+            ),
           ),
         ),
         SizedBox(height: 25),
@@ -358,7 +368,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             StatItem(initialValue: '20', label: 'Projects Completed'),
             SizedBox(
               width: size.width / 44,
@@ -368,12 +377,17 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               width: size.width / 44,
             ),
             StatItem(
-                initialValue: '12547', label: 'Content Impression & Views'),
+                initialValue: '12607', label: 'Content Impression & Views'),
           ],
         )
       ],
     );
   }
+  void _scrollToContact() {
+    Scrollable.ensureVisible(_contactKey.currentContext!,
+        duration: Duration(seconds: 2), curve: Curves.easeInOut);
+  }
+
 
   Widget _buildAboutSection() {
     return Padding(
@@ -670,7 +684,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   }
   Widget _buildExpertiseSection() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 400,horizontal: 250),
+      padding: EdgeInsets.symmetric(horizontal: 220),
       alignment: Alignment.center,
       child: ExpertiseSection(key: _expertiseKey),
     );
@@ -678,11 +692,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
 
 
   Widget _buildContactSection() {
-    return _buildSection(
-      key: _contactKey,
-      title: 'Experience',
-      content: 'Detail your work experience in this section.',
-    );
+    return Container(
+      color:  Color(0xff25262A),
+        padding: EdgeInsets.symmetric(horizontal: 220),
+        alignment: Alignment.center,
+        child: ContactPage(key: _contactKey));
   }
 
 
