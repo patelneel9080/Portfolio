@@ -656,7 +656,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 fontWeight: FontWeight.bold,
                 color: themecolor),
           ),
-          SizedBox(height: 20,),
+          SizedBox(height: 30,),
           Container(
             height: 700,
             child: GridView.builder(
