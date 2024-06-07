@@ -530,7 +530,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                     _buildTechCategory(
                         'Mobile development', ['Flutter', 'Dart']),
                     _buildTechCategory(
-                        'Web development', ['HTML 5', 'CSS 3', 'Javascript']),
+                        'Web development', ['HTML', 'CSS', 'Javascript']),
                     _buildTechCategory('Server side', [
                       'Node.js',
                       'REST APIs',
