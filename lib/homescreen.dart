@@ -94,6 +94,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         controller: _scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(height: 30),
             _buildHeader(),
@@ -669,7 +670,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   }
   Widget _buildExpertiseSection() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 350,vertical: 400),
+      padding: EdgeInsets.symmetric(vertical: 400,horizontal: 250),
+      alignment: Alignment.center,
       child: ExpertiseSection(key: _expertiseKey),
     );
   }
