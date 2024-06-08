@@ -372,12 +372,12 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             SizedBox(
               width: size.width / 44,
             ),
-            StatItem(initialValue: '600', label: 'Content Followers'),
+            StatItem(initialValue: '599', label: 'Content Followers'),
             SizedBox(
               width: size.width / 44,
             ),
             StatItem(
-                initialValue: '12607', label: 'Content Impression & Views'),
+                initialValue: '12799', label: 'Content Impression & Views'),
           ],
         )
       ],
