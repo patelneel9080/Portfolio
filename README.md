@@ -7,7 +7,6 @@ Welcome to my portfolio! This Flutter-based project showcases my skills and proj
 - **Dynamic Title Animations:** Utilizes AnimatedTextKit for engaging title animations.
 - **Interactive Navigation:** Smooth scrolling and interactive navigation between sections.
 - **Customizable Theme Colors:** Easily change theme colors to suit your preference.
-- **Responsive Design:** Ensures seamless viewing experience across different devices.
 - **Downloadable Resume:** Direct link to download resume for easy access.
 - **Integrated Social Media Links:** Connect with me on various social platforms.
 - **Detailed Sections:** Includes About, Tech Stack, Projects, Expertise, and Contact sections.
